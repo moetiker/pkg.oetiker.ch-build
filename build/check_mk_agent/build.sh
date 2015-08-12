@@ -91,7 +91,15 @@ make_install() {
         logerr "------ Failed to copy agent."
     logcmd chmod +x ${DESTDIR}${PREFIX}/lib/check_mk_agent/plugins/mk_inventory || \
         logerr "------ Failed to make agent executable."
-    
+    logcmd cp ${SRCDIR}/files/omni_smart ${DESTDIR}${PREFIX}/lib/check_mk_agent/plugins || \
+        logerr "------ Failed to copy agent."
+    logcmd chmod +x ${DESTDIR}${PREFIX}/lib/check_mk_agent/plugins/omni_smart || \
+        logerr "------ Failed to make agent executable."
+    logcmd cp ${SRCDIR}/files/omni_zpool ${DESTDIR}${PREFIX}/lib/check_mk_agent/plugins || \
+        logerr "------ Failed to copy agent."
+    logcmd chmod +x ${DESTDIR}${PREFIX}/lib/check_mk_agent/plugins/omni_zpool || \
+        logerr "------ Failed to make agent executable."
+
     logcmd cp ${SRCDIR}/files/mk_inventory.cfg ${DESTDIR}/opt/etc/mk_inventory.cfg || \
         logerr "------ Failed to copy agent."
 

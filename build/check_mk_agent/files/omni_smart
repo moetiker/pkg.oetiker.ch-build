@@ -1,0 +1,8 @@
+#!/bin/sh
+echo "<<<omni_smart>>>"
+export PATH=/opt/omni/sbin:/opt/oep/sbin:/sbin:/bin
+for disk in /dev/rdsk/*s0 ; do
+  smartctl -d scsi -A $disk 2>/dev/null \
+  | egrep -v "Smartctl|Copyright" \
+  | egrep "^[A-Z]" |sed "s@^@${disk} @"
+done 

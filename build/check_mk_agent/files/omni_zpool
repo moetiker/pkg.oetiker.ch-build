@@ -1,0 +1,3 @@
+#!/bin/sh
+echo "<<<omni_zpool>>>"
+/sbin/zpool get -p all
