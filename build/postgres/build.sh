@@ -21,32 +21,62 @@
 # CDDL HEADER END
 #
 #
-# Copyright 1995-2014 OETIKER+PARTNER AG.  All rights reserved.
+# Copyright 2011-2012 OmniTI Computer Consulting, Inc.  All rights reserved.
+# Copyright 2016 OETIKER+PARTNER AG.  All rights reserved.
 # Use is subject to license terms.
 #
 # Load support functions
 . ../../lib/functions.sh
 
-PROG=flac
-VER=1.3.1
+PROG=postgresql
+VER=9.5.2
 VERHUMAN=$VER
-PKG=oep/audio/flac
-SUMMARY="$PROG - Free Lossless Audio Codec (v$VER)"
+PKG=oep/database/postgresql
+SUMMARY="$PROG - Open Source Database System"
 DESC="$SUMMARY"
-MIRROR=downloads.xiph.org
-DLDIR=releases/flac
-BUILDARCH=both
+MIRROR=ftp.postgresql.org/pub/source
+DLDIR="v$VER"
 
-BUILD_DEPENDS_IPS=
-RUN_DEPENDS_IPS=
+PREFIX=/opt/oep/pgsql
+reset_configure_opts
 
-CONFIGURE_OPTS="--enable-shared"
+CFLAGS="-O3"
+BUILDARCH=64
+
+CONFIGURE_OPTS="--enable-thread-safety
+    --enable-debug
+    --with-openssl
+    --with-libxml
+    --prefix=$PREFIX
+    --with-readline"
+
+CONFIGURE_OPTS_32="$CONFIGURE_OPTS_32 --enable-dtrace"
+CONFIGURE_OPTS_64="$CONFIGURE_OPTS_64 --enable-dtrace DTRACEFLAGS=\"-64\""
+
+make_prog() {
+    logmsg "--- make"
+    logcmd $MAKE $MAKE_JOBS world || \
+        logerr "--- Make failed"
+}
+
+make_install() {
+    logmsg "--- make install"
+    logcmd $MAKE DESTDIR=${DESTDIR} install-world || \
+        logerr "--- Make install failed"
+}
+
+install_manifest() {
+    tgtdir=${DESTDIR}/lib/svc/manifest/oep/postgres
+    mkdir -p ${tgtdir}
+    install -m 0444 ${SRCDIR}/postgresql.xml ${tgtdir}/ || logerr 'manifest install failed'
+}
 
 init
 download_source $DLDIR $PROG $VER
 patch_source
 prep_build
 build
+install_manifest
 make_isa_stub
 make_package
 clean_up

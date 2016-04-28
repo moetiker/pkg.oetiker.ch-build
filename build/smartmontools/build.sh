@@ -21,33 +21,49 @@
 # CDDL HEADER END
 #
 #
-# Copyright 1995-2014 OETIKER+PARTNER AG.  All rights reserved.
+# Copyright 1995-2013 OETIKER+PARTNER AG  All rights reserved.
 # Use is subject to license terms.
 #
 # Load support functions
 . ../../lib/functions.sh
 
-PROG=flac
-VER=1.3.1
+PROG=smartmontools
+VER=6.4
 VERHUMAN=$VER
-PKG=oep/audio/flac
-SUMMARY="$PROG - Free Lossless Audio Codec (v$VER)"
+PKG=oep/system/storage/smartmontools
+SUMMARY="Control and monitor storage systems using SMART"
 DESC="$SUMMARY"
-MIRROR=downloads.xiph.org
-DLDIR=releases/flac
-BUILDARCH=both
+MIRROR=sourceforge.net
+DLDIR=projects/$PROG/files/$PROG/$VER
 
-BUILD_DEPENDS_IPS=
-RUN_DEPENDS_IPS=
+BUILDARCH=64
 
-CONFIGURE_OPTS="--enable-shared"
+CPPFLAGS64="$CPPFLAGS64 -D_AVL_H"
+
+CONFIGURE_OPTS_64="--prefix=$PREFIX
+    --sysconfdir=/etc$PREFIX/smartmontools
+    --includedir=$PREFIX/include
+    --bindir=$PREFIX/bin/$ISAPART64
+    --sbindir=$PREFIX/sbin/$ISAPART64
+    --libdir=$PREFIX/lib/$ISAPART64
+    --libexecdir=$PREFIX/libexec/$ISAPART64"
+
+service_configs() {
+    logmsg "--- Copying SMF manifest"
+    logcmd mkdir -p $DESTDIR/lib/svc/manifest/system/storage
+    logcmd cp $SRCDIR/files/manifest-smartd.xml \
+    $DESTDIR/lib/svc/manifest/system/storage/smartd.xml ||
+    logerr "Failed to copy SMF manifest"
+}
 
 init
 download_source $DLDIR $PROG $VER
 patch_source
 prep_build
 build
+mkdir -p $DESTDIR/var/opt/oep/run $DESTDIR/var/opt/oep/smartmontools
 make_isa_stub
+service_configs
 make_package
 clean_up
 

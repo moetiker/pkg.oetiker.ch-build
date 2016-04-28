@@ -1,24 +1,16 @@
 <?xml version="1.0"?>
 <!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
-<service_bundle type="manifest" name="minidlna">
+<service_bundle type="manifest" name="smartd">
 
 <service 
-	name="oep/multimedia/minidlna"
+	name="oep/system/storage/smartd"
 	type="service" 
 	version="1">
-
+    
         <create_default_instance 
-        	enabled="false" />
+            enabled="false" />
 
         <single_instance/>
-
-        <dependency
-            name='network'
-            grouping='require_all'
-            restart_on='none'
-            type='service'>
-            <service_fmri value='svc:/milestone/network:default' />
-        </dependency>
 
         <dependency
             name='filesystem'
@@ -33,7 +25,7 @@
             grouping='require_all'
             restart_on='refresh'
             type='path'>
-            <service_fmri value='file://localhost/etc/opt/oep/minidlna/minidlna.conf' />
+            <service_fmri value='file://localhost/etc/opt/oep/smartmontools/smartd.conf' />
         </dependency>
 
         <method_context>
@@ -45,7 +37,7 @@
         <exec_method 
 		type="method" 
 		name="start" 
-		exec="/opt/oep/sbin/minidlnad -R -f /etc/opt/oep/minidlna/minidlna.conf"
+		exec="/opt/oep/sbin/smartd --pidfile=/var/opt/oep/run/smartd.pid --savestates=/var/opt/oep/smartmontools/"
 		timeout_seconds="60" />
 
         <exec_method
@@ -60,7 +52,7 @@
         <template>
             <common_name>
                 <loctext xml:lang="C">
-                MiniDLNA - DLNA/UPnP-AV media server
+                smartmontools - Control and monitor storage systems using SMART
                 </loctext>
             </common_name>
         </template>
