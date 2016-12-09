@@ -27,43 +27,30 @@
 # Load support functions
 . ../../lib/functions.sh
 
-PROG=smartmontools
-VER=6.5
-VERHUMAN=$VER
-PKG=oep/system/storage/smartmontools
-SUMMARY="Control and monitor storage systems using SMART"
-DESC="$SUMMARY"
-MIRROR=sourceforge.net
-DLDIR=projects/$PROG/files/$PROG/$VER
-
-BUILDARCH=64
-
-CPPFLAGS64="$CPPFLAGS64 -D_AVL_H"
-
-CONFIGURE_OPTS_64="--prefix=$PREFIX
-    --sysconfdir=/etc$PREFIX/smartmontools
-    --includedir=$PREFIX/include
-    --bindir=$PREFIX/bin/$ISAPART64
-    --sbindir=$PREFIX/sbin/$ISAPART64
-    --libdir=$PREFIX/lib/$ISAPART64
-    --libexecdir=$PREFIX/libexec/$ISAPART64"
-
-service_configs() {
-    logmsg "--- Copying SMF manifest"
-    logcmd mkdir -p $DESTDIR/lib/svc/manifest/system/storage
-    logcmd cp $SRCDIR/files/manifest-smartd.xml \
-    $DESTDIR/lib/svc/manifest/system/storage/smartd.xml ||
-    logerr "Failed to copy SMF manifest"
-}
+PROG=lxadm # App name
+VER=0.1.0-rc1    # App version
+VERHUMAN=$VER   # Human-readable version
+#PVER=          # Branch (set in config.sh, override here if needed)
+PKG=oep/lxadm # Package name (e.g. library/foo)
+SUMMARY="Manage Illumos LX zones"      # One-liner, must be filled in
+DESC="Manage Illumos LX zones"         # Longer description, must be filled in
+BUILDARCH=32    # or 64 or both ... for libraries we want both for tools 32 bit only
+BUILDDIR=$PROG
+BUILD_DEPENDS_IPS=
+RUN_DEPENDS_IPS=
 
 init
-download_source $DLDIR $PROG $VER
-patch_source
+pushd $TMPDIR
+[ -d $PROG ] && rm -rf $PROG
+mkdir $PROG
+cd $PROG
+curl -L https://github.com/hadfl/${PROG}/releases/download/v$VER/${PROG}-$VER.tar.gz | gtar zxf -
+cd ${PROG}-$VER
 prep_build
-build
-mkdir -p $DESTDIR/var/opt/oep/run $DESTDIR/var/opt/oep/smartmontools
-make_isa_stub
-service_configs
+./configure --prefix=/opt/oep
+gmake
+gmake install DESTDIR=$DESTDIR
+
 make_package
 clean_up
 

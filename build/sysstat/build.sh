@@ -21,49 +21,34 @@
 # CDDL HEADER END
 #
 #
-# Copyright 1995-2013 OETIKER+PARTNER AG  All rights reserved.
+# Copyright 1995-2016 OETIKER+PARTNER AG  All rights reserved.
 # Use is subject to license terms.
 #
 # Load support functions
 . ../../lib/functions.sh
 
-PROG=smartmontools
-VER=6.5
+PROG=sysstat
+VER=20151012
 VERHUMAN=$VER
-PKG=oep/system/storage/smartmontools
-SUMMARY="Control and monitor storage systems using SMART"
+PKG=oep/system/sysstat
+SUMMARY="sysstat - key system statistics at a glance"
 DESC="$SUMMARY"
-MIRROR=sourceforge.net
-DLDIR=projects/$PROG/files/$PROG/$VER
+MIRROR=www.maier-komor.de
+DLDIR=$PROG
 
 BUILDARCH=64
 
 CPPFLAGS64="$CPPFLAGS64 -D_AVL_H"
 
 CONFIGURE_OPTS_64="--prefix=$PREFIX
-    --sysconfdir=/etc$PREFIX/smartmontools
-    --includedir=$PREFIX/include
-    --bindir=$PREFIX/bin/$ISAPART64
-    --sbindir=$PREFIX/sbin/$ISAPART64
-    --libdir=$PREFIX/lib/$ISAPART64
-    --libexecdir=$PREFIX/libexec/$ISAPART64"
-
-service_configs() {
-    logmsg "--- Copying SMF manifest"
-    logcmd mkdir -p $DESTDIR/lib/svc/manifest/system/storage
-    logcmd cp $SRCDIR/files/manifest-smartd.xml \
-    $DESTDIR/lib/svc/manifest/system/storage/smartd.xml ||
-    logerr "Failed to copy SMF manifest"
-}
+    --cc=gcc"
 
 init
 download_source $DLDIR $PROG $VER
 patch_source
 prep_build
 build
-mkdir -p $DESTDIR/var/opt/oep/run $DESTDIR/var/opt/oep/smartmontools
 make_isa_stub
-service_configs
 make_package
 clean_up
 
