@@ -28,12 +28,13 @@
 . ../../lib/functions.sh
 
 PROG=openldap   # App name
-VER=2.4.40      # App version
+VER=2.4.45      # App version
 VERHUMAN=$VER   # Human-readable version
 #PVER=          # Branch (set in config.sh, override here if needed)
 PKG=oep/library/openldap # Package name (e.g. library/foo)
 SUMMARY="openldap ldap library"      # One-liner, must be filled in
 DESC="an opensource implementation of ldap with library and tools"         # Longer description, must be filled in
+DOWNLOADURL="ftp://mirror.switch.ch/mirror/OpenLDAP/openldap-release/$PROG-$VER.tgz"
 
 BUILDARCH=both
 
@@ -86,7 +87,8 @@ service_configs() {
 
 init
 download_source $PROG $PROG $VER
-patch_source -p0
+#patch_source -p0
+patch_source
 prep_build
 build
 make_isa_stub
